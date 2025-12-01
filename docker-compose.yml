@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - server-a
+    networks:
+      - elainsuoja-network
+
+  server-a:
+    build: ./server-a
+    ports:
+      - "4000:4000"
+    environment:
+      - SERVER_B_URL=http://server-b:5000
+      - DATABASE_PATH=/data/animals.db
+    volumes:
+      - server-a-data:/data
+    depends_on:
+      - server-b
+    networks:
+      - elainsuoja-network
+
+  server-b:
+    build: ./server-b
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_PATH=/data/adoptions.db
+      - SERVER_A_URL=http://server-a:4000
+    volumes:
+      - server-b-data:/data
+    networks:
+      - elainsuoja-network
+
+networks:
+  elainsuoja-network:
+    driver: bridge
+
+volumes:
+  server-a-data:
+  server-b-data:
