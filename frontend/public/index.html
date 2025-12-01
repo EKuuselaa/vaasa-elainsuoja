@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaasan Eläinsuoja - Adoptoi eläin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .animals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .animal-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .animal-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .animal-info {
+            padding: 20px;
+        }
+
+        .animal-info h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .animal-meta {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .animal-meta span {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .detail-view {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .detail-header {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .detail-image {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+        }
+
+        .detail-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .detail-info h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .info-row {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+
+        .info-row strong {
+            color: #667eea;
+            display: inline-block;
+            width: 100px;
+        }
+
+        .description {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .adoption-form {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f8f8;
+            border-radius: 15px;
+        }
+
+        .adoption-form h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .back-button {
+            margin-bottom: 20px;
+            background: #6c757d;
+        }
+
+        .success-view {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .success-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .success-view h1 {
+            color: #28a745;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .success-view p {
+            color: #555;
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .animals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-header {
+                flex-direction: column;
+            }
+
+            .detail-info h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐾 Vaasan Eläinsuoja</h1>
+            <p>Anna kodittomalle eläimelle uusi koti</p>
+        </header>
+
+        <!-- Listanäkymä -->
+        <div id="listView" class="hidden">
+            <div id="animalsGrid" class="animals-grid"></div>
+        </div>
+
+        <!-- Yksityiskohtanäkymä -->
+        <div id="detailView" class="hidden">
+            <div class="detail-view">
+                <button class="btn back-button" onclick="showList()">← Takaisin listaukseen</button>
+                <div id="detailContent"></div>
+            </div>
+        </div>
+
+        <!-- Kiitos-näkymä -->
+        <div id="successView" class="hidden">
+            <div class="success-view">
+                <div class="success-icon">✅</div>
+                <h1>Kiitos adoptiohakemuksestasi!</h1>
+                <p id="successMessage"></p>
+                <button class="btn" onclick="showList()">Palaa etusivulle</button>
+            </div>
+        </div>
+
+        <!-- Latausnäkymä -->
+        <div id="loadingView" class="loading">
+            Ladataan eläimiä...
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:4000';
+        let currentAnimal = null;
+
+        // Hae kaikki eläimet
+        async function loadAnimals() {
+            try {
+                const response = await fetch(`${API_URL}/animals`);
+                const animals = await response.json();
+                displayAnimals(animals);
+            } catch (error) {
+                console.error('Virhe ladattaessa eläimiä:', error);
+                document.getElementById('loadingView').innerHTML = 
+                    '<div class="error">Virhe ladattaessa eläimiä. Tarkista että palvelin on käynnissä.</div>';
+            }
+        }
+
+        // Näytä eläimet kortteina
+        function displayAnimals(animals) {
+            const grid = document.getElementById('animalsGrid');
+            grid.innerHTML = '';
+
+            if (animals.length === 0) {
+                grid.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1;">Ei adoptoitavia eläimiä tällä hetkellä.</p>';
+                showView('listView');
+                return;
+            }
+
+            animals.forEach(animal => {
+                const card = document.createElement('div');
+                card.className = 'animal-card';
+                card.onclick = () => showAnimalDetails(animal.id);
+
+                const typeEmoji = animal.type === 'koira' ? '🐕' : '🐈';
+                
+                card.innerHTML = `
+                    <img src="${animal.image_url}" alt="${animal.name}" class="animal-image" 
+                         onerror="this.src='https://via.placeholder.com/400x250?text=Ei+kuvaa'">
+                    <div class="animal-info">
+                        <h2>${typeEmoji} ${animal.name}</h2>
+                        <div class="animal-meta">
+                            <span>${animal.type}</span>
+                            <span>${animal.age} vuotta</span>
+                        </div>
+                        <button class="btn">Katso lisää</button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            showView('listView');
+        }
+
+        // Näytä eläimen yksityiskohdat
+        async function showAnimalDetails(animalId) {
+            try {
+                const response = await fetch(`${API_URL}/animals/${animalId}`);
+                const animal = await response.json();
+                currentAnimal = animal;
+
+                const typeEmoji = animal.type === 'koira' ? '🐕' : '🐈';
+
+                const detailContent = document.getElementById('detailContent');
+                detailContent.innerHTML = `
+                    <div class="detail-header">
+                        <div class="detail-image">
+                            <img src="${animal.image_url}" alt="${animal.name}"
+                                 onerror="this.src='https://via.placeholder.com/500x400?text=Ei+kuvaa'">
+                        </div>
+                        <div class="detail-info">
+                            <h1>${typeEmoji} ${animal.name}</h1>
+                            <div class="info-row">
+                                <strong>Tyyppi:</strong> ${animal.type}
+                            </div>
+                            <div class="info-row">
+                                <strong>Ikä:</strong> ${animal.age} vuotta
+                            </div>
+                            <div class="info-row">
+                                <strong>Rotu:</strong> ${animal.breed}
+                            </div>
+                            <div class="info-row">
+                                <strong>Status:</strong> ${animal.status === 'available' ? 'Adoptoitavissa' : 'Adoptoitu'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="description">
+                        <strong>Kuvaus:</strong><br>
+                        ${animal.description}
+                    </div>
+
+                    <div class="adoption-form">
+                        <h2>📝 Adoptoi ${animal.name}</h2>
+                        <form id="adoptionForm" onsubmit="submitAdoption(event)">
+                            <div class="form-group">
+                                <label for="adopterName">Nimesi *</label>
+                                <input type="text" id="adopterName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adopterEmail">Sähköpostisi *</label>
+                                <input type="email" id="adopterEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adopterPhone">Puhelinnumerosi</label>
+                                <input type="tel" id="adopterPhone">
+                            </div>
+                            <div class="form-group">
+                                <label for="adopterAddress">Osoitteesi</label>
+                                <textarea id="adopterAddress"></textarea>
+                            </div>
+                            <div id="formError" class="error hidden"></div>
+                            <button type="submit" class="btn">💚 Adoptoi minut!</button>
+                        </form>
+                    </div>
+                `;
+
+                showView('detailView');
+            } catch (error) {
+                console.error('Virhe ladattaessa eläintä:', error);
+                alert('Virhe ladattaessa eläimen tietoja');
+            }
+        }
+
+        // Lähetä adoptiohakemus
+        async function submitAdoption(event) {
+            event.preventDefault();
+
+            const formError = document.getElementById('formError');
+            formError.classList.add('hidden');
+
+            const adoptionData = {
+                adopterName: document.getElementById('adopterName').value,
+                adopterEmail: document.getElementById('adopterEmail').value,
+                adopterPhone: document.getElementById('adopterPhone').value,
+                adopterAddress: document.getElementById('adopterAddress').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/animals/${currentAnimal.id}/adopt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(adoptionData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    document.getElementById('successMessage').innerHTML = `
+                        Olemme vastaanottaneet adoptiohakemuksesi eläimelle <strong>${result.animal}</strong>.<br>
+                        Otamme sinuun yhteyttä pian sähköpostitse osoitteeseen <strong>${adoptionData.adopterEmail}</strong>.<br><br>
+                        Adoptiohakemuksen numero: <strong>${result.adoptionId}</strong>
+                    `;
+                    showView('successView');
+                } else {
+                    formError.textContent = result.error || 'Virhe lähettäessä hakemusta';
+                    formError.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Virhe lähettäessä adoptiohakemusta:', error);
+                formError.textContent = 'Yhteysvirhe palvelimeen. Yritä myöhemmin uudelleen.';
+                formError.classList.remove('hidden');
+            }
+        }
+
+        // Näytä tietty näkymä
+        function showView(viewId) {
+            document.getElementById('listView').classList.add('hidden');
+            document.getElementById('detailView').classList.add('hidden');
+            document.getElementById('successView').classList.add('hidden');
+            document.getElementById('loadingView').classList.add('hidden');
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        // Palaa listaukseen
+        function showList() {
+            loadAnimals();
+        }
+
+        // Lataa eläimet sivun latautuessa
+        window.onload = loadAnimals;
+    </script>
+</body>
+</html>
